@@ -1,4 +1,6 @@
 # scan-book
+https://scan-book.netlify.app/  
+書籍のISBNバーコードをカメラでスキャンして、Googleスプレッドシートに書籍の情報を保存するアプリです
 
 ## Project setup
 ```
