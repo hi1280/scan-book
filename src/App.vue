@@ -1,20 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <button v-if="!isLogin" v-on:click="login">Login</button>
+    <button v-if="isLogin" v-on:click="logout">Logout</button>
+    <scan v-if="isLogin"></scan>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "./components/HelloWorld.vue";
+import Scan from "./components/Scan.vue";
 
 @Component({
   components: {
-    HelloWorld
+    Scan
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  $gapi: any;
+  isLogin: boolean | null = null;
+
+  login() {
+    this.$gapi.login();
+  }
+
+  logout() {
+    localStorage.removeItem("scan-book.spreadsheetId");
+    this.$gapi.logout();
+  }
+
+  async created() {
+    const gapi = await this.$gapi.getGapiClient();
+    this.isLogin = gapi.auth2.getAuthInstance().isSignedIn.get();
+    gapi.auth2.getAuthInstance().isSignedIn.listen(this.updateSigninStatus);
+  }
+
+  updateSigninStatus(isSignedIn: boolean) {
+    this.isLogin = isSignedIn;
+  }
+}
 </script>
 
 <style>
@@ -24,6 +47,13 @@ export default class App extends Vue {}
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
+  font-size: 20px;
+}
+
+button {
+  width: 100px;
+  height: 60px;
+  font-size: 20px;
 }
 </style>
